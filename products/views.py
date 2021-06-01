@@ -12,7 +12,7 @@ def index(request):
 
 def products(request):
     goods = Product.objects.all()
-    categories = ProductCategory.objects.all
+    categories = ProductCategory.objects.all()
     context = {
         'title': 'GeekShop - Каталог',
         'products': goods,
