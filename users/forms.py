@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from users.models import User
+from re import findall
 
 
 class UserLoginForm(AuthenticationForm):
@@ -32,3 +33,9 @@ class UserRegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+
+    def clean_email(self):
+        data = self.cleaned_data['email']
+        if not findall(r'"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)"?', data):
+            raise forms.ValidationError('Неверный адрес электронной почты.')
+        return data
