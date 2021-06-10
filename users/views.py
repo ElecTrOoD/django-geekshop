@@ -3,6 +3,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
 from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
+from baskets.models import Basket
 
 
 def login(request):
@@ -41,17 +42,19 @@ def register(request):
 
 
 def profile(request):
+    user = request.user
     if request.method == 'POST':
-        form = UserProfileForm(data=request.POST, files=request.FILES, instance=request.user)
+        form = UserProfileForm(data=request.POST, files=request.FILES, instance=user)
         if form.is_valid():
             form.save()
             messages.success(request, 'Профиль отредактирован!')
             return HttpResponseRedirect(reverse('users:profile'))
     else:
-        form = UserProfileForm(instance=request.user)
+        form = UserProfileForm(instance=user)
     content = {
-        'title': f'GeekShop - профиль {request.user.username}',
-        'form': form
+        'title': f'GeekShop - профиль {user.username}',
+        'form': form,
+        'baskets': Basket.objects.filter(user=user)
     }
     return render(request, 'users/profile.html', content)
 
