@@ -20,3 +20,23 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.name} | {self.category.name}'
+
+    def decrement_quantity(self):
+        self.quantity -= 1
+        if self.quantity == 0:
+            self.is_active = False
+        self.save()
+
+    def increment_quantity(self):
+        if not self.is_active:
+            self.is_active = True
+        self.quantity += 1
+        self.save()
+
+    def set_quantity(self, quantity):
+        if not self.is_active:
+            self.is_active = True
+            self.quantity = quantity
+        else:
+            self.quantity += quantity
+        self.save()
