@@ -26,6 +26,7 @@ def add_to_basket(request, product_id):
     if request.is_ajax():
         product = Product.objects.get(id=product_id)
         baskets = Basket.objects.filter(user=request.user, product=product)
+        product.decrement_quantity()
 
         if not baskets.exists():
             Basket.objects.create(user=request.user, product=product, quantity=1)
@@ -33,7 +34,8 @@ def add_to_basket(request, product_id):
             basket = baskets.first()
             basket.quantity += 1
             basket.save()
-        products = Product.objects.all()
+
+        products = Product.objects.filter(is_active=True)
         context = {'products': products}
         result = render_to_string('products/products_list.html', context)
         return JsonResponse({'result': result})
@@ -42,6 +44,7 @@ def add_to_basket(request, product_id):
 @login_required
 def remove_from_basket(request, id):
     basket = Basket.objects.get(id=id)
+    basket.product.set_quantity(basket.quantity)
     basket.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
@@ -51,6 +54,10 @@ def basket_edit(request, id, quantity):
     if request.is_ajax():
         basket = Basket.objects.get(id=id)
         if quantity > 0:
+            if basket.quantity > quantity:
+                basket.product.increment_quantity()
+            else:
+                basket.product.decrement_quantity()
             basket.quantity = quantity
             basket.save()
         else:

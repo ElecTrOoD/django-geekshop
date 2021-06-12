@@ -4,7 +4,7 @@ window.onload = function () {
         $.ajax({
             url: '/baskets/add/' + t_href.name,
             success: function (data) {
-                $('.basket-list').html(data.result);
+                $('.products-list').html(data.result);
             }
         });
         event.preventDefault();
