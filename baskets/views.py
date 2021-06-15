@@ -40,13 +40,15 @@ def basket_edit(request, id, quantity):
     if request.is_ajax():
         basket = Basket.objects.get(id=id)
         if quantity > 0:
-            if basket.quantity > quantity:
-                basket.product.increment_quantity()
-            else:
+            if quantity > basket.quantity:
                 basket.product.decrement_quantity()
-            basket.quantity = quantity
+                basket.quantity = quantity
+            elif quantity != basket.quantity:
+                basket.product.increment_quantity()
+                basket.quantity = quantity
             basket.save()
         else:
+            basket.product.increment_quantity()
             basket.delete()
         baskets = Basket.objects.filter(user=request.user)
         context = {'baskets': baskets}

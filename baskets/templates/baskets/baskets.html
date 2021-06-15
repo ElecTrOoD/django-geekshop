@@ -14,7 +14,8 @@
                         <div class="row text-center">
                             <div class="col-lg-4">
                                 <input name="{{ basket.id }}" type="number" class="form-control"
-                                       value="{{ basket.quantity }}" min="1">
+                                       value="{{ basket.quantity }}" min="0"
+                                       max="{{ basket.quantity|add:basket.product.quantity }}">
                             </div>
                             <div class="col-lg-4">{{ basket.sum }} руб.</div>
                             <div class="col-lg-4">
