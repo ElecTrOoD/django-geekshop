@@ -67,6 +67,13 @@ def admin_users_delete(request, id):
 
 
 @user_passes_test(lambda u: u.is_superuser)
+def admin_users_complete_delete(request, id):
+    user = Product.objects.get(id=id)
+    user.delete()
+    return HttpResponseRedirect(reverse('admins:admin_users'))
+
+
+@user_passes_test(lambda u: u.is_superuser)
 def admin_users_restore(request, id):
     user = User.objects.get(id=id)
     user.is_active = True

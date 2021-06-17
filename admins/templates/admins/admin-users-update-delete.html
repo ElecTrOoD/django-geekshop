@@ -50,7 +50,7 @@
                 <div class="row">
                     <div class="col-lg-12" style="margin-top: 33px;">
                         {% if user.is_active %}
-                            <a href="{% url 'admins:admin_users_delete' user.id %}" class="btn btn-danger btn-block">
+                            <a href="{% url 'admins:admin_users_delete' user.id %}" class="btn btn-warning btn-block">
                                 Удалить
                             </a>
                         {% else %}
@@ -58,6 +58,10 @@
                                 Восстановить
                             </a>
                         {% endif %}
+                    <a href="{% url 'admins:admin_users_complete_delete' user.id %}"
+                           class="btn btn-danger btn-block">
+                            Удалить из базы данных
+                        </a>
                     </div>
                 </div>
             </div>
