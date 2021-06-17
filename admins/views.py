@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
@@ -6,6 +7,7 @@ from users.models import User
 from admins.forms import UserAdminRegisterForm, UserAdminProfileForm
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def index(request):
     context = {
         'title': 'GeekShop - Админ'
@@ -13,6 +15,7 @@ def index(request):
     return render(request, 'admins/admin.html', context)
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def admin_users(request):
     context = {
         'title': 'GeekShop - Админ | Пользователи',
@@ -21,6 +24,7 @@ def admin_users(request):
     return render(request, 'admins/admin-users-read.html', context)
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def admin_users_create(request):
     if request.method == 'POST':
         form = UserAdminRegisterForm(data=request.POST, files=request.FILES)
@@ -36,6 +40,7 @@ def admin_users_create(request):
     return render(request, 'admins/admin-users-create.html', context)
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def admin_users_update(request, id):
     user = User.objects.get(id=id)
     if request.method == 'POST':
@@ -53,6 +58,7 @@ def admin_users_update(request, id):
     return render(request, 'admins/admin-users-update-delete.html', content)
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def admin_users_delete(request, id):
     user = User.objects.get(id=id)
     user.is_active = False
@@ -60,6 +66,7 @@ def admin_users_delete(request, id):
     return HttpResponseRedirect(reverse('admins:admin_users'))
 
 
+@user_passes_test(lambda u: u.is_superuser)
 def admin_users_restore(request, id):
     user = User.objects.get(id=id)
     user.is_active = True
