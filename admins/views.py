@@ -1,8 +1,9 @@
+from django.contrib import messages
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
 from users.models import User
-from admins.forms import UserAdminRegisterForm
+from admins.forms import UserAdminRegisterForm, UserAdminProfileForm
 
 
 def index(request):
@@ -36,7 +37,20 @@ def admin_users_create(request):
 
 
 def admin_users_update(request, id):
-    return render(request, 'admins/admin-users-update-delete.html')
+    user = User.objects.get(id=id)
+    if request.method == 'POST':
+        form = UserAdminProfileForm(data=request.POST, files=request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:admin_users'))
+    else:
+        form = UserAdminProfileForm(instance=user)
+    content = {
+        'title': f'GeekShop - Админ | Профиль {user.username}',
+        'user': user,
+        'form': form
+    }
+    return render(request, 'admins/admin-users-update-delete.html', content)
 
 
 def admin_users_delete(request, id):
