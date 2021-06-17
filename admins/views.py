@@ -106,11 +106,11 @@ def admin_products_update(request, id):
         form = ProductAdminForm(data=request.POST, files=request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse('admins:admin_users'))
+            return HttpResponseRedirect(reverse('admins:admin_products'))
     else:
         form = ProductAdminForm(instance=product)
     content = {
-        'title': f'GeekShop - Админ | Редактирование продукта',
+        'title': 'GeekShop - Админ | Продукт',
         'product': product,
         'form': form
     }
@@ -119,9 +119,22 @@ def admin_products_update(request, id):
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_products_delete(request, id):
-    pass
+    product = Product.objects.get(id=id)
+    product.is_active = False
+    product.save()
+    return HttpResponseRedirect(reverse('admins:admin_products'))
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_products_complete_delete(request, id):
+    product = Product.objects.get(id=id)
+    product.delete()
+    return HttpResponseRedirect(reverse('admins:admin_products'))
 
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_products_restore(request, id):
-    pass
+    product = Product.objects.get(id=id)
+    product.is_active = True
+    product.save()
+    return HttpResponseRedirect(reverse('admins:admin_products'))
