@@ -30,8 +30,6 @@ class ProductAdminForm(ModelForm):
         'class': 'form-control py-4', 'placeholder': 'Введите количество продуктов'}))
     category = forms.ModelChoiceField(queryset=ProductCategory.objects.all(), widget=forms.Select(attrs={
         'class': 'form-control', 'title': 'Выберите категорию'}))
-    is_active = forms.ChoiceField(choices=((True, 'True'), (False, 'False')), widget=forms.Select(attrs={
-        'class': 'form-control', 'title': 'Продукт активен'}))
     image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input'}), required=False)
 
     class Meta:
