@@ -1,11 +1,10 @@
-from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
+from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminForm
 from products.models import Product
 from users.models import User
-from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminCreationForm
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -87,12 +86,12 @@ def admin_products(request):
 @user_passes_test(lambda u: u.is_superuser)
 def admin_products_create(request):
     if request.method == 'POST':
-        form = ProductAdminCreationForm(data=request.POST, files=request.FILES)
+        form = ProductAdminForm(data=request.POST, files=request.FILES)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('admins:admin_products'))
     else:
-        form = ProductAdminCreationForm()
+        form = ProductAdminForm()
     context = {
         'title': 'GeekShop - Админ | Создание пользователя',
         'form': form
@@ -102,7 +101,20 @@ def admin_products_create(request):
 
 @user_passes_test(lambda u: u.is_superuser)
 def admin_products_update(request, id):
-    pass
+    product = Product.objects.get(id=id)
+    if request.method == 'POST':
+        form = ProductAdminForm(data=request.POST, files=request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:admin_users'))
+    else:
+        form = ProductAdminForm(instance=product)
+    content = {
+        'title': f'GeekShop - Админ | Редактирование продукта',
+        'product': product,
+        'form': form
+    }
+    return render(request, 'admins/admin-products-update-delete.html', content)
 
 
 @user_passes_test(lambda u: u.is_superuser)

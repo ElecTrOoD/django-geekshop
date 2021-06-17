@@ -19,7 +19,7 @@ class UserAdminProfileForm(UserProfileForm):
     email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control py-4', 'readonly': False}))
 
 
-class ProductAdminCreationForm(ModelForm):
+class ProductAdminForm(ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Введите название продукта'}))
     description = forms.CharField(widget=forms.TextInput(attrs={
@@ -30,8 +30,10 @@ class ProductAdminCreationForm(ModelForm):
         'class': 'form-control py-4', 'placeholder': 'Введите количество продуктов'}))
     category = forms.ModelChoiceField(queryset=ProductCategory.objects.all(), widget=forms.Select(attrs={
         'class': 'form-control', 'title': 'Выберите категорию'}))
+    is_active = forms.ChoiceField(choices=((True, 'True'), (False, 'False')), widget=forms.Select(attrs={
+        'class': 'form-control', 'title': 'Продукт активен'}))
     image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input'}), required=False)
 
     class Meta:
         model = Product
-        fields = ('name', 'description', 'price', 'quantity', 'category', 'image')
+        fields = ('name', 'description', 'price', 'quantity', 'category', 'image', 'is_active')
