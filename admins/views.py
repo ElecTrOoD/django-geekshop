@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
+from products.models import Product
 from users.models import User
-from admins.forms import UserAdminRegisterForm, UserAdminProfileForm
+from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminCreationForm
 
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -72,3 +73,43 @@ def admin_users_restore(request, id):
     user.is_active = True
     user.save()
     return HttpResponseRedirect(reverse('admins:admin_users'))
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_products(request):
+    context = {
+        'title': 'GeekShop - Админ | Продукты',
+        'products': Product.objects.all()
+    }
+    return render(request, 'admins/admin-products-read.html', context)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_products_create(request):
+    if request.method == 'POST':
+        form = ProductAdminCreationForm(data=request.POST, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('admins:admin_products'))
+    else:
+        form = ProductAdminCreationForm()
+    context = {
+        'title': 'GeekShop - Админ | Создание пользователя',
+        'form': form
+    }
+    return render(request, 'admins/admin-products-create.html', context)
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_products_update(request, id):
+    pass
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_products_delete(request, id):
+    pass
+
+
+@user_passes_test(lambda u: u.is_superuser)
+def admin_products_restore(request, id):
+    pass
