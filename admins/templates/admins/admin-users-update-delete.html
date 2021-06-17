@@ -55,7 +55,7 @@
                             </a>
                         {% else %}
                             <a href="{% url 'admins:admin_users_restore' user.id %}" class="btn btn-success btn-block">
-                                Восстановить
+                                Активировать
                             </a>
                         {% endif %}
                     <a href="{% url 'admins:admin_users_complete_delete' user.id %}"
