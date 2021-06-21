@@ -8,7 +8,7 @@ from products.models import Product
 
 
 @login_required
-def add_to_basket(request, product_id):
+def add_to_basket(request, product_id, category_id=None):
     if request.is_ajax():
         product = Product.objects.get(id=product_id)
         baskets = Basket.objects.filter(user=request.user, product=product)
@@ -21,9 +21,12 @@ def add_to_basket(request, product_id):
             basket.quantity += 1
             basket.save()
 
-        products = Product.objects.filter(is_active=True)
+        if category_id:
+            products = Product.objects.filter(is_active=True, category_id=category_id)
+        else:
+            products = Product.objects.filter(is_active=True)
         context = {'products': products}
-        result = render_to_string('products/products_list.html', context)
+        result = render_to_string('products/products_list.html', context, request)
         return JsonResponse({'result': result})
 
 
