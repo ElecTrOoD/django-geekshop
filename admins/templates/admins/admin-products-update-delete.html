@@ -56,21 +56,17 @@
                 </form>
                 <div class="row">
                     <div class="col-lg-12" style="margin-top: 33px;">
-                        {% if product.is_active %}
-                            <a href="{% url 'admins:admin_products_delete' product.id %}"
-                               class="btn btn-warning btn-block">
-                                Удалить
-                            </a>
-                        {% else %}
-                            <a href="{% url 'admins:admin_products_restore' product.id %}"
-                               class="btn btn-success btn-block">
-                                Активировать
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'admins:admin_products_complete_delete' product.id %}"
-                           class="btn btn-danger btn-block">
-                            Удалить из базы данных
-                        </a>
+                        <form action="{% url 'admins:admin_products_delete' product.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="submit"
+                                   value="{% if product.is_active %} Удалить {% else %} Восстановить {% endif %}"
+                                   class="btn btn-block {% if product.is_active %} btn-warning {% else %} btn-success {% endif %}">
+                        </form>
+                        <form action="{% url 'admins:admin_products_complete_delete' product.id %}" method="post"
+                              class="mt-2">
+                            {% csrf_token %}
+                            <input type="submit" class="btn btn-danger btn-block" value="Удалить из базы данных">
+                        </form>
                     </div>
                 </div>
             </div>
