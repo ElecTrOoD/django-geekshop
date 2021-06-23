@@ -7,23 +7,25 @@
 
 {% block content %}
     <div class="container">
-
         <div class="row">
-
             <div class="col-lg-3">
-
                 <h1 class="my-4">GeekShop</h1>
                 <div class="list-group">
+                    <a href="{% url 'products:index' %}"
+                       class="list-group-item list-group-item-action {% if not filter %} active {% endif %}">
+                        Все товары
+                    </a>
                     {% for category in categories %}
-                        <a href="#" class="list-group-item">{{ category.name }}</a>
+                        <form action="{% url 'products:index' %}" method="get">
+                            <input type="submit"
+                                   class="list-group-item list-group-item-action {% if filter == category.name %} active {% endif %}"
+                                   value="{{ category }}" name="filter">
+                        </form>
                     {% endfor %}
                 </div>
-
             </div>
-            <!-- /.col-lg-3 -->
 
             <div class="col-lg-9">
-
                 <div id="carouselExampleIndicators" class="carousel slide my-4" data-ride="carousel">
                     <ol class="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -56,24 +58,31 @@
 
                 {% include 'products/products_list.html' %}
 
-                <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Next</a>
-                        </li>
-                    </ul>
-                </nav>
+                {% if page_obj.paginator.num_pages > 1 %}
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item {% if not page_obj.has_previous %} disabled {% endif %}">
+                                <a class="page-link"
+                                   href="{% if page_obj.has_previous %} {% url 'products:page' page_obj.previous_page_number %} {% else %} # {% endif %}"
+                                   tabindex="-1" aria-disabled="true">Предыдущая</a>
+                            </li>
+                            {% for page in page_obj.paginator.page_range %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{% url 'products:page' page %}">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                            <li class="page-item">
+                                <a class="page-link {% if not page_obj.has_next %} disabled {% endif %}"
+                                   href="{% if page_obj.has_next %} {% url 'products:page' page_obj.next_page_number %} {% else %} # {% endif %}">Следующая</a>
+                            </li>
+                        </ul>
+                    </nav>
+                {% endif %}
 
             </div>
-
         </div>
-
     </div>
 {% endblock %}
 
@@ -82,7 +91,6 @@
         <div class="container">
             <p class="m-0 text-center text-white col">Current Date: {% now "d-m-y" %}</p>
             <p class="m-0 text-center text-white col">Copyright &copy; GeekShop {% now "Y" %}</p>
-
         </div>
     </footer>
 {% endblock %}
