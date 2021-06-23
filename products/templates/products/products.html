@@ -12,16 +12,15 @@
                 <h1 class="my-4">GeekShop</h1>
                 <div class="list-group">
                     <a href="{% url 'products:index' %}"
-                       class="list-group-item list-group-item-action
-                              {% if not request.resolver_match.kwargs.category_id %} active {% endif %}">
+                       class="list-group-item list-group-item-action {% if not filter %} active {% endif %}">
                         Все товары
                     </a>
                     {% for category in categories %}
-                        <a href="{% url 'products:category' category.id %}"
-                           class="list-group-item list-group-item-action
-                                 {% if request.resolver_match.kwargs.category_id == category.id %} active {% endif %}">
-                            {{ category.name }}
-                        </a>
+                        <form action="{% url 'products:index' %}" method="get">
+                            <input type="submit"
+                                   class="list-group-item list-group-item-action {% if filter == category.name %} active {% endif %}"
+                                   value="{{ category }}" name="filter">
+                        </form>
                     {% endfor %}
                 </div>
             </div>
@@ -59,15 +58,15 @@
 
                 {% include 'products/products_list.html' %}
 
-                {% if products.paginator.num_pages > 1 %}
+                {% if page_obj.paginator.num_pages > 1 %}
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item {% if not products.has_previous %} disabled {% endif %}">
+                            <li class="page-item {% if not page_obj.has_previous %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="{% if products.has_previous %} {% url 'products:page' products.previous_page_number %} {% else %} # {% endif %}"
+                                   href="{% if page_obj.has_previous %} {% url 'products:page' page_obj.previous_page_number %} {% else %} # {% endif %}"
                                    tabindex="-1" aria-disabled="true">Предыдущая</a>
                             </li>
-                            {% for page in products.paginator.page_range %}
+                            {% for page in page_obj.paginator.page_range %}
                                 <li class="page-item">
                                     <a class="page-link" href="{% url 'products:page' page %}">
                                         {{ page }}
@@ -75,8 +74,8 @@
                                 </li>
                             {% endfor %}
                             <li class="page-item">
-                                <a class="page-link {% if not products.has_next %} disabled {% endif %}"
-                                   href="{% if products.has_next %} {% url 'products:page' products.next_page_number %} {% else %} # {% endif %}">Следующая</a>
+                                <a class="page-link {% if not page_obj.has_next %} disabled {% endif %}"
+                                   href="{% if page_obj.has_next %} {% url 'products:page' page_obj.next_page_number %} {% else %} # {% endif %}">Следующая</a>
                             </li>
                         </ul>
                     </nav>

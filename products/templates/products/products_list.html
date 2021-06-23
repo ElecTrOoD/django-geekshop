@@ -1,8 +1,8 @@
 {% load static %}
-{% if products %}
+{% if object_list %}
     <div class="products-list">
         <div class="row">
-            {% for product in products|dictsortreversed:'price' %}
+            {% for product in object_list %}
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card h-100">
                         <a href="#">
