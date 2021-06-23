@@ -1,15 +1,7 @@
-from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 
 from products.models import Product, ProductCategory
-
-
-def index(request):
-    context = {
-        'title': 'GeekShop'
-    }
-    return render(request, 'products/index.html', context)
 
 
 class IndexView(TemplateView):
