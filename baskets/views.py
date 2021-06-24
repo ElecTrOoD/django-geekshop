@@ -25,7 +25,7 @@ def add_to_basket(request, product_id, category_id=None):
             products = Product.objects.filter(is_active=True, category_id=category_id)
         else:
             products = Product.objects.filter(is_active=True)
-        context = {'products': products}
+        context = {'object_list': products}
         result = render_to_string('products/products_list.html', context, request)
         return JsonResponse({'result': result})
 
