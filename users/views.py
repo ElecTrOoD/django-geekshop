@@ -45,11 +45,13 @@ class UserProfileUpdateView(UpdateView):
     template_name = 'users/profile.html'
     form_class = UserProfileForm
     success_url = reverse_lazy('users:profile')
+    success_message = 'Профиль отредактирован!'
 
     def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
-            messages.success(request, 'Профиль отредактирован!')
+            messages.success(request, self.success_message)
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -83,5 +85,5 @@ def verify(request, email, activation_key):
 def send_verify_mail(user):
     subject = 'Verify your account'
     link = reverse('users:verify', args=[user.email, user.activation_key])
-    message = f'{settings.DOMAIN}{link}'
+    message = f'Для подтверждения учетной записи {user.username} перейдите по ссылке: {settings.DOMAIN}{link}'
     return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
