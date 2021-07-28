@@ -1,3 +1,5 @@
+import hashlib
+import random
 from re import findall
 
 from django import forms
@@ -40,6 +42,15 @@ class UserRegisterForm(UserCreationForm):
         if not findall(r'"?([-a-zA-Z0-9.`?{}]+@\w+\.\w+)"?', data):
             raise forms.ValidationError('Неверный адрес электронной почты.')
         return data
+
+    def save(self, commit=True):
+        user = super().save()
+        user.is_active = False
+        salt = hashlib.sha1(str(random.random()).encode('utf-8')).hexdigest()[:6]
+        user.activation_key = hashlib.sha1((user.email + salt).encode('utf-8')).hexdigest()
+
+        user.save()
+        return user
 
 
 class UserProfileForm(UserChangeForm):
