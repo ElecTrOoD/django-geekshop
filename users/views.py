@@ -13,7 +13,7 @@ from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
 from users.models import User
 
 
-class UserLoginView(LoginView, SuccessMessageMixin):
+class UserLoginView(LoginView):
     authentication_form = UserLoginForm
     template_name = 'users/login.html'
     success_url = reverse_lazy('index')
@@ -21,7 +21,7 @@ class UserLoginView(LoginView, SuccessMessageMixin):
     extra_context = {'title': 'GeekShop - авторизация'}
 
 
-class UserRegisterView(CreateView, SuccessMessageMixin):
+class UserRegisterView(CreateView):
     model = User
     template_name = 'users/register.html'
     form_class = UserRegisterForm
