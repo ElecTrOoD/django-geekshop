@@ -61,6 +61,13 @@
                         <a class="nav-link" href="{% url 'users:login' %}">Войти <i class="fas fa-sign-in-alt"></i></a>
                     </li>
                 {% endif %}
+                {% if basket %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:profile' %}">
+                            <i class="fa fa-shopping-basket"></i> {{ basket.0.total_sum|floatformat:0 }} руб. ({{ basket.0.total_quantity }} шт)
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

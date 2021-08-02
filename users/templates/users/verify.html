@@ -1,0 +1,13 @@
+{% extends 'users/base.html' %}
+{% block content %}
+    <div class="col-lg-5 text-center" style="margin-top: 35%">
+        {% if user.is_authenticated %}
+            <h3>Поздравляем!</h3>
+            <div>Пользователь {{ user.email }} успешно активирован</div>
+        {% else %}
+            <h3>Ошибка!</h3>
+            <div>Пользователя не удалось активировать</div>
+        {% endif %}
+        <a href="{% url 'index' %}" class="btn btn-info btn-block btn-lg mt-5">На главную</a>
+    </div>
+{% endblock %}
