@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from products.views import IndexView
 
 urlpatterns = [
+    path('', include('social_django.urls', namespace='social')),
     path('admin/', admin.site.urls),
     path('', IndexView.as_view(), name='index'),
     path('products/', include('products.urls', namespace='products')),

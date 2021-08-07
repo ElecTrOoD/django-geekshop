@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib import messages, auth
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -9,7 +8,7 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView
 
 from baskets.models import Basket
-from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm, UserSocialProfileForm
 from users.models import User
 
 
@@ -48,22 +47,27 @@ class UserProfileUpdateView(UpdateView):
     success_message = 'Профиль отредактирован!'
 
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
+        user = self.get_object()
+        profile_form = UserProfileForm(self.request.POST, self.request.FILES, instance=user)
+        social_profile_form = UserSocialProfileForm(self.request.POST, instance=user.userprofile)
+        if profile_form.is_valid() and social_profile_form.is_valid():
+            profile_form.save()
             messages.success(request, self.success_message)
-            return self.form_valid(form)
+            return HttpResponseRedirect(reverse('users:profile'))
         else:
-            return self.form_invalid(form)
+            return self.form_invalid(profile_form)
 
     def get_object(self, queryset=None):
         return self.request.user
 
     def get_context_data(self, **kwargs):
-        context = super(UserProfileUpdateView, self).get_context_data(**kwargs)
         user = self.get_object()
-        context['title'] = f'GeekShop - профиль {user.username}'
-        context['baskets'] = Basket.objects.filter(user=user.id)
+        profile_form = UserProfileForm(instance=user)
+        social_profile_form = UserSocialProfileForm(instance=user.userprofile)
+        context = {'title': f'GeekShop - профиль {user.username}',
+                   'baskets': Basket.objects.filter(user=user.id),
+                   'profile_form': profile_form,
+                   'social_profile_form': social_profile_form}
         return context
 
 
@@ -77,7 +81,7 @@ def verify(request, email, activation_key):
         if user.activation_key == activation_key and not user.is_activation_key_expired():
             user.is_active = True
             user.save()
-            auth.login(request, user)
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return render(request, 'users/verify.html')
     return HttpResponseRedirect(reverse('index'))
 
