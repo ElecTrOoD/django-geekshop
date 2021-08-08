@@ -2,7 +2,8 @@ from django.urls import path
 
 from admins.views import AdminIndexView, AdminUserListView, AdminUserCreateView, AdminUserUpdateView, \
     AdminUserDeleteView, AdminUserCompleteDeleteView, AdminProductListView, AdminProductCreateView, \
-    AdminProductUpdateView, AdminProductDeleteView, AdminProductCompleteDeleteView
+    AdminProductUpdateView, AdminProductDeleteView, AdminProductCompleteDeleteView, AdminOrderListView, \
+    update_order_status, cancel_order
 
 app_name = 'admins'
 
@@ -19,4 +20,7 @@ urlpatterns = [
     path('products/delete/<int:pk>', AdminProductDeleteView.as_view(), name='admin_products_delete'),
     path('products/complete-delete/<int:pk>', AdminProductCompleteDeleteView.as_view(),
          name='admin_products_complete_delete'),
+    path('orders/', AdminOrderListView.as_view(), name='admin_orders'),
+    path('orders/delete/<pk>', cancel_order, name='admin_orders_delete'),
+    path('update_order_status/<pk>', update_order_status, name='update_order_status'),
 ]
