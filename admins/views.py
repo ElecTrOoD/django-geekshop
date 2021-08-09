@@ -150,7 +150,7 @@ class AdminOrderListView(ListView):
 
 def update_order_status(request, pk):
     order = Order.objects.get(pk=pk)
-    if not order.status == Order.CANCELED:
+    if order.status not in [Order.CANCELED, Order.DONE]:
         STATUSES = {
             'FM': Order.PROCEED,
             'PRC': Order.DELIVERY,
