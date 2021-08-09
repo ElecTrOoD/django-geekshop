@@ -15,6 +15,7 @@
                             <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>Пользователь</th>
                                 <th>Создан</th>
                                 <th>Обновлен</th>
                                 <th class="text-center">Статус - нажмите для обновления</th>
@@ -24,6 +25,7 @@
                             <tfoot>
                             <tr>
                                 <th>ID</th>
+                                <th>Пользователь</th>
                                 <th>Создан</th>
                                 <th>Обновлен</th>
                                 <th class="text-center">Статус - нажмите для обновления</th>
@@ -34,6 +36,7 @@
                             {% for order in object_list %}
                                 <tr>
                                     <td>{{ order.id }}</td>
+                                    <td>{{ order.user.username }}</td>
                                     <td>{{ order.created }}</td>
                                     <td>{{ order.updated }}</td>
                                     <td><a href="{% url 'admins:update_order_status' order.pk %}"
