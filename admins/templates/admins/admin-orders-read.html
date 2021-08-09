@@ -41,8 +41,12 @@
                                     <td>{{ order.updated }}</td>
                                     <td><a href="{% url 'admins:update_order_status' order.pk %}"
                                            class="btn btn-outline-primary col">{{ order.get_status_display }}</a></td>
-                                    <td><a href="{% url 'admins:admin_orders_delete' order.pk %}"
-                                           class="btn btn-outline-primary col">Отменить</a></td>
+                                    {% if order.status == 'CND' or order.status == 'DN' %}
+                                        <td></td>
+                                    {% else %}
+                                        <td><a href="{% url 'admins:admin_orders_delete' order.pk %}"
+                                               class="btn btn-outline-primary col">Отменить</a></td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                             </tbody>
