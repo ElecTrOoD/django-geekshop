@@ -45,6 +45,11 @@
                             <i class="fas fa-user-circle"></i>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders:orders_list' %}">Заказы
+                            <i class="fa fa-credit-card"></i>
+                        </a>
+                    </li>
                     {% if user.is_superuser %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'admin:index' %}">

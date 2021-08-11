@@ -43,4 +43,5 @@ def save_user_profile(backend, user, response, *args, **kwargs):
         image.close()
         user.image = f'/users_images/{user.username}.jpg'
 
+    user.is_active = True
     user.save()

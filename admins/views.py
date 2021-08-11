@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
 from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminForm
+from orders.models import Order
 from products.models import Product
 from users.models import User
 
@@ -135,3 +136,31 @@ class AdminProductCompleteDeleteView(DeleteView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser))
     def dispatch(self, request, *args, **kwargs):
         return super(AdminProductCompleteDeleteView, self).dispatch(request, *args, **kwargs)
+
+
+class AdminOrderListView(ListView):
+    model = Order
+    template_name = 'admins/admin-orders-read.html'
+    extra_context = {'title': 'GeekShop - Админ | Заказы'}
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminOrderListView, self).dispatch(request, *args, **kwargs)
+
+
+def update_order_status(request, pk):
+    order = Order.objects.get(pk=pk)
+    if order.status not in [Order.CANCELED, Order.DONE]:
+        STATUSES = {
+            'FM': Order.PROCEED,
+            'PRC': Order.DELIVERY,
+            'DLV': Order.DONE,
+        }
+        order.status = STATUSES[order.status]
+        order.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_orders'))
+
+
+def cancel_order(request, pk):
+    Order.objects.get(pk=pk).delete()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_orders'))

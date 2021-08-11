@@ -1,0 +1,23 @@
+{% extends 'products/base.html' %}
+{% load static %}
+
+{% block css %}
+    <link href="{% static 'css/orders.css' %}" rel="stylesheet">
+{% endblock %}
+{% block content %}
+    <div class="container mt-3">
+        {% include 'orders/includes/inc_order_summary.html' %}
+        <div class="basket_list">
+            {% for item in object.orderitems.select_related %}
+                <div class="list-group-item">
+                    <span>{{ item.product.category.name }}</span>
+                    <span>{{ item.product.name }}</span>
+                    <span>{{ item.product.price }}&nbspруб</span>
+                    <span>x {{ item.quantity }} шт.</span>
+                    <span>= {{ item.get_product_cost }}&nbspруб</span>
+                </div>
+            {% endfor %}
+        </div>
+        {% include 'orders/includes/inc_order_actions.html' %}
+    </div>
+{% endblock %}

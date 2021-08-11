@@ -1,0 +1,59 @@
+{% extends 'admins/base.html' %}
+
+{% block content %}
+    <main>
+        <div class="container-fluid">
+            <h1 class="mt-4">Заказы</h1>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table mr-1"></i>
+                    Заказы
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Пользователь</th>
+                                <th>Создан</th>
+                                <th>Обновлен</th>
+                                <th class="text-center">Статус - нажмите для обновления</th>
+                                <th class="text-center">Отменить заказ</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>ID</th>
+                                <th>Пользователь</th>
+                                <th>Создан</th>
+                                <th>Обновлен</th>
+                                <th class="text-center">Статус - нажмите для обновления</th>
+                                <th class="text-center">Отменить заказ</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            {% for order in object_list %}
+                                <tr>
+                                    <td>{{ order.id }}</td>
+                                    <td>{{ order.user.username }}</td>
+                                    <td>{{ order.created }}</td>
+                                    <td>{{ order.updated }}</td>
+                                    <td><a href="{% url 'admins:update_order_status' order.pk %}"
+                                           class="btn btn-outline-primary col">{{ order.get_status_display }}</a></td>
+                                    {% if order.status == 'CND' or order.status == 'DN' %}
+                                        <td></td>
+                                    {% else %}
+                                        <td><a href="{% url 'admins:admin_orders_delete' order.pk %}"
+                                               class="btn btn-outline-primary col">Отменить</a></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

@@ -1,0 +1,24 @@
+<div class="row mt-5">
+    {% if object.status == 'FM' %}
+        <div class="col">
+            <a href="{% url 'orders:orders_confirm' object.pk %}"
+               class="btn btn-success form-control last">
+                совершить покупку
+            </a>
+        </div>
+        <div class="col">
+            <a href="{% url 'orders:orders_delete' object.pk %}"
+               class="btn btn-danger form-control last">
+                удалить
+            </a>
+        </div>
+
+    {% endif %}
+    <div class="col">
+        <a href="{% url 'orders:orders_list' %}"
+           class="btn btn-secondary form-control last">
+            к списку заказов
+        </a>
+    </div>
+
+</div>
