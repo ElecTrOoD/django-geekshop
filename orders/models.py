@@ -45,7 +45,7 @@ class Order(models.Model):
     def delete(self, using=None, keep_parents=False):
         item_list = self.orderitems.all()
         for item in item_list:
-            item.product.quantity = item.product.quantity + item.quantity
+            item.product.quantity += item.quantity
             item.product.save()
         self.is_active = False
         self.status = self.CANCELED
