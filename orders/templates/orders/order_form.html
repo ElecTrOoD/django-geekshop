@@ -8,7 +8,7 @@
 {% block content %}
     <div class="container mt-3">
         {% include 'orders/includes/inc_order_summary.html' %}
-        <form action="" method="post">
+        <form action="" name="order_form" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <table class="table">
@@ -25,7 +25,7 @@
                         </tr>
                         </thead>
                     {% endif %}
-                    <tr>
+                    <tr name="formset_row">
                         {% for field in form.visible_fields %}
                             <td>
                                 {% if forloop.first %}
@@ -34,7 +34,18 @@
                                     {% endfor %}
                                 {% endif %}
                                 {{ field.errors.as_ul }}
-                                {{ field }}
+                                {% if field.name == 'price' %}
+                                    {% if field.value %}
+                                        <span class="orderitems-{{ forloop.parentloop.counter0 }}-price">{{ field.value }} руб.</span>
+                                    {% endif %}
+                                {% elif field.name == 'quantity' and field.value %}
+                                    <input type="number"
+                                           name="orderitems-{{ forloop.parentloop.counter0 }}-quantity"
+                                           value="{{ field.value }}" min="0" max="{{ form.instance.product.quantity }}"
+                                           class="form-control">
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
                             </td>
                         {% endfor %}
                     </tr>
@@ -45,4 +56,9 @@
             {% include 'orders/includes/inc_order_actions.html' %}
         </form>
     </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static '/js/orders-scripts.js' %}"></script>
+    <script src="{% static '/vendor/jquery/jquery.formset.js' %}"></script>
 {% endblock %}
