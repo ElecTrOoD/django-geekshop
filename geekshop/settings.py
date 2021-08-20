@@ -175,7 +175,7 @@ LOGIN_URL = '/users/login/'
 
 LOGIN_REDIRECT_URL = '/'
 
-DOMAIN = 'http://127.0.0.1:8000'
+DOMAIN = os.getenv('DOMAIN')
 
 EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
