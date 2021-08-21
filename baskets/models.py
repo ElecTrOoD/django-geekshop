@@ -12,7 +12,7 @@ class Basket(models.Model):
 
     @property
     def get_baskets(self):
-        return Basket.objects.filter(user=self.user)
+        return Basket.objects.filter(user=self.user).select_related()
 
     def __str__(self):
         return f'Корзина для {self.user.username} | Продукт: {self.product.name}'

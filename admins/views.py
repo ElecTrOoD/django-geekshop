@@ -93,6 +93,9 @@ class AdminProductListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         return super(AdminProductListView, self).dispatch(request, *args, **kwargs)
 
+    def get_queryset(self):
+        return self.model.objects.all().select_related()
+
 
 class AdminProductCreateView(CreateView):
     model = Product
@@ -146,6 +149,9 @@ class AdminOrderListView(ListView):
     @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
     def dispatch(self, request, *args, **kwargs):
         return super(AdminOrderListView, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.model.objects.all().select_related()
 
 
 def update_order_status(request, pk):

@@ -11,7 +11,7 @@ from products.models import Product
 def add_to_basket(request, product_id, category_id=None):
     if request.is_ajax():
         product = Product.objects.get(id=product_id)
-        baskets = Basket.objects.filter(user=request.user, product=product)
+        baskets = Basket.objects.filter(user=request.user, product=product).select_related()
 
         if not baskets.exists():
             Basket.objects.create(user=request.user, product=product, quantity=1)
@@ -21,9 +21,9 @@ def add_to_basket(request, product_id, category_id=None):
             basket.save()
 
         if category_id:
-            products = Product.objects.filter(is_active=True, category_id=category_id)
+            products = Product.objects.filter(is_active=True, category_id=category_id).select_related()
         else:
-            products = Product.objects.filter(is_active=True)
+            products = Product.objects.filter(is_active=True).select_related()
         context = {'object_list': products}
         result = render_to_string('products/products_list.html', context, request)
         return JsonResponse({'result': result})

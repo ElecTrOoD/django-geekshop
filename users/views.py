@@ -65,7 +65,6 @@ class UserProfileUpdateView(UpdateView):
         profile_form = UserProfileForm(instance=user)
         social_profile_form = UserSocialProfileForm(instance=user.userprofile)
         context = {'title': f'GeekShop - профиль {user.username}',
-                   'baskets': Basket.objects.filter(user=user.id),
                    'profile_form': profile_form,
                    'social_profile_form': social_profile_form}
         return context
