@@ -11,7 +11,7 @@ from django.dispatch import receiver
 class User(AbstractUser):
     image = models.ImageField(upload_to='users_images', blank=True)
     age = models.PositiveIntegerField(default=18)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(db_index=True, default=False)
     activation_key = models.CharField(max_length=128, blank=True)
     activation_key_created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 

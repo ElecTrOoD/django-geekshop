@@ -2,7 +2,7 @@ from django.db import transaction
 from django.db.models.signals import pre_save, pre_delete
 from django.dispatch import receiver
 from django.forms import inlineformset_factory
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
@@ -33,7 +33,7 @@ class OrderItemCreate(CreateView):
         if self.request.method == 'POST':
             formset = OrderFormset(self.request.POST)
         else:
-            basket_items = Basket.objects.filter(user=self.request.user)
+            basket_items = Basket.objects.filter(user=self.request.user).select_related()
             if basket_items.exists():
                 OrderFormset = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=basket_items.count())
                 formset = OrderFormset()
@@ -82,7 +82,8 @@ class OrderItemUpdate(UpdateView):
         if self.request.method == 'POST':
             formset = OrderFormset(self.request.POST, instance=self.object)
         else:
-            formset = OrderFormset(instance=self.object)
+            queryset = self.object.orderitems.select_related()
+            formset = OrderFormset(instance=self.object, queryset=queryset)
             for form in formset.forms:
                 if form.instance.pk:
                     form.initial['price'] = form.instance.product.price
