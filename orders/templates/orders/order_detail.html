@@ -8,7 +8,7 @@
     <div class="container mt-3">
         {% include 'orders/includes/inc_order_summary.html' %}
         <div class="basket_list">
-            {% for item in object.orderitems.select_related %}
+            {% for item in object.get_items %}
                 <div class="list-group-item">
                     <span>{{ item.product.category.name }}</span>
                     <span>{{ item.product.name }}</span>
