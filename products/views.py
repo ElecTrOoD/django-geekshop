@@ -62,7 +62,7 @@ class ProductListView(ListView):
             category_name = self.request.GET.get('filter')
             new_queryset = get_products_by_category(category_name)
         else:
-            new_queryset = Product.objects.filter(is_active=True)
+            new_queryset = get_products()
         return new_queryset
 
     def get_context_data(self, **kwargs):

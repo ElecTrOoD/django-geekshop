@@ -208,7 +208,9 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
+LOW_CACHE = False
 ENV_TYPE = os.getenv('ENV_TYPE')
+
 if ENV_TYPE in ['prod', 'test', 'stage']:
     CACHE_MIDDLEWARE_ALIAS = 'default'
     CACHE_MIDDLEWARE_SECONDS = 120
@@ -221,4 +223,4 @@ if ENV_TYPE in ['prod', 'test', 'stage']:
         }
     }
 
-LOW_CAHCE = True
+    LOW_CACHE = True
