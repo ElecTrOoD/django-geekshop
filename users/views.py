@@ -5,9 +5,9 @@ from django.core.mail import send_mail
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
+from django.views.decorators.cache import cache_page
 from django.views.generic import CreateView, UpdateView
 
-from baskets.models import Basket
 from users.forms import UserLoginForm, UserRegisterForm, UserProfileForm, UserSocialProfileForm
 from users.models import User
 
