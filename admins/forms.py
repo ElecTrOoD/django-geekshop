@@ -40,7 +40,7 @@ class ProductAdminForm(ModelForm):
 class CategoryAdminForm(ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Введите название категории'}))
-    description = forms.CharField(widget=forms.TextInput(attrs={
+    description = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Введите описание категории'}))
     discount = forms.IntegerField(required=False, min_value=0, max_value=90, initial=0, widget=forms.NumberInput(attrs={
         'class': 'form-control py-4', 'placeholder': 'Введите скидку категории'}))
