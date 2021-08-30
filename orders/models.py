@@ -24,7 +24,7 @@ class Order(models.Model):
 
     status = models.CharField(max_length=3, choices=STATUSES, default=FORMING)
     created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(db_index=True, default=True)
 
     class Meta:
