@@ -6,9 +6,9 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
-from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminForm
+from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminForm, CategoryAdminForm
 from orders.models import Order
-from products.models import Product
+from products.models import Product, ProductCategory
 from users.models import User
 
 
@@ -84,6 +84,53 @@ class AdminUserCompleteDeleteView(DeleteView):
         return super(AdminUserCompleteDeleteView, self).dispatch(request, *args, **kwargs)
 
 
+class AdminProductCategoryListView(ListView):
+    model = ProductCategory
+    template_name = 'admins/admin-category-read.html'
+    extra_context = {'title': 'GeekShop - Админ | Категории'}
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminProductCategoryListView, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.model.objects.all().select_related()
+
+
+class AdminProductCategoryCreateView(CreateView):
+    model = ProductCategory
+    template_name = 'admins/admin_category_create.html'
+    form_class = CategoryAdminForm
+    success_url = reverse_lazy('admins:admin_category')
+    extra_context = {'title': 'GeekShop - Админ | Создание категории'}
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminProductCategoryCreateView, self).dispatch(request, *args, **kwargs)
+
+
+class AdminProductCategoryUpdateView(UpdateView):
+    model = ProductCategory
+    template_name = 'admins/admin-category-update-delete.html'
+    form_class = CategoryAdminForm
+    success_url = reverse_lazy('admins:admin_category')
+    extra_context = {'title': 'GeekShop - Админ | Категория'}
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminProductCategoryUpdateView, self).dispatch(request, *args, **kwargs)
+
+
+class AdminCategoryDeleteView(DeleteView):
+    model = ProductCategory
+    template_name = 'admins/admin-category-update-delete.html'
+    success_url = reverse_lazy('admins:admin_category')
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminCategoryDeleteView, self).dispatch(request, *args, **kwargs)
+
+
 class AdminProductListView(ListView):
     model = Product
     template_name = 'admins/admin-products-read.html'
@@ -94,7 +141,10 @@ class AdminProductListView(ListView):
         return super(AdminProductListView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return self.model.objects.all().select_related()
+        if 'pk' in self.kwargs:
+            return self.model.objects.filter(category_id=self.kwargs['pk']).select_related()
+        else:
+            return self.model.objects.all().select_related()
 
 
 class AdminProductCreateView(CreateView):
