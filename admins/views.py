@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import F
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -100,7 +102,7 @@ class AdminProductCategoryListView(ListView):
 
 class AdminProductCategoryCreateView(CreateView):
     model = ProductCategory
-    template_name = 'admins/admin_category_create.html'
+    template_name = 'admins/admin-category-create.html'
     form_class = CategoryAdminForm
     success_url = reverse_lazy('admins:admin_category')
     extra_context = {'title': 'GeekShop - Админ | Создание категории'}
@@ -228,3 +230,37 @@ def update_order_status(request, pk):
 def cancel_order(request, pk):
     Order.objects.get(pk=pk).delete()
     return HttpResponseRedirect(reverse_lazy('admins:admin_orders'))
+
+
+def change_product_is_active_status(request, pk):
+    selected_product = Product.objects.get(pk=pk)
+    selected_product.is_active = not selected_product.is_active
+    selected_product.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_products'))
+
+
+def change_productcategory_is_active_status(request, pk):
+    selected_category = ProductCategory.objects.get(pk=pk)
+    selected_category.is_active = not selected_category.is_active
+    selected_category.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_category'))
+
+
+@receiver(pre_save, sender=ProductCategory)
+def product_is_active_update_productcategory_save(sender, instance, **kwargs):
+    if instance.pk:
+        instance.product_set.update(is_active=instance.is_active)
+
+
+def change_user_is_active_status(request, pk):
+    selected_user = User.objects.get(pk=pk)
+    selected_user.is_active = not selected_user.is_active
+    selected_user.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_users'))
+
+
+def change_user_is_staff_status(request, pk):
+    selected_user = User.objects.get(pk=pk)
+    selected_user.is_staff = not selected_user.is_staff
+    selected_user.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_users'))

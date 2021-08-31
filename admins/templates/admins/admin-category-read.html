@@ -17,6 +17,7 @@
                                 <th>ID</th>
                                 <th>Название</th>
                                 <th>Описание</th>
+                                <th>Активный</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -25,6 +26,7 @@
                                 <th>ID</th>
                                 <th>Название</th>
                                 <th>Описание</th>
+                                <th>Активный</th>
                                 <th></th>
                             </tr>
                             </tfoot>
@@ -34,7 +36,16 @@
                                     <td>{{ category.id }}</td>
                                     <td><a href="{% url 'admins:admin_category_update' category.id %}"
                                            style="color: dodgerblue">{{ category.name }}</a></td>
-                                    <td>{{ product.description }}</td>
+                                    <td>{{ category.description }}</td>
+                                    <td class="text-center">
+                                        <a href="{% url 'admins:admin_category_update_status' category.pk %}">
+                                            <i class="{% if category.is_active %}
+                                                          fas fa-check-circle
+                                                      {% else %}
+                                                          fas fa-times-circle
+                                                      {% endif %}"></i>
+                                        </a>
+                                    </td>
                                     <td>
                                         <a href="{% url 'admins:admin_products_category' category.id %}"
                                            class="btn btn-outline-primary col">
