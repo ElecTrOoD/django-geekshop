@@ -26,9 +26,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4i$xqra!c9u4+7%nuj()*sp-9ba$85&!h*u3&m0hf5(w9(ludo'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+
+ENV_TYPE = os.getenv('ENV_TYPE')
 
 # Application definition
 
@@ -45,9 +47,6 @@ INSTALLED_APPS = [
     'baskets',
     'admins',
     'orders',
-    'debug_toolbar',
-    'template_profiler_panel',
-    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -60,13 +59,18 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware'
 ]
 
 if DEBUG:
     def show_toolbar(request):
         return True
 
+
+    INSTALLED_APPS += ['debug_toolbar',
+                       'template_profiler_panel',
+                       'django_extensions']
+
+    MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware']
 
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': show_toolbar,
@@ -88,6 +92,8 @@ if DEBUG:
         'debug_toolbar.panels.profiling.ProfilingPanel',
         'template_profiler_panel.panels.template.TemplateProfilerPanel',
     ]
+
+    INTERNAL_IPS = ['*']
 
 ROOT_URLCONF = 'geekshop.urls'
 
@@ -115,13 +121,25 @@ WSGI_APPLICATION = 'geekshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
+if ENV_TYPE == 'local':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3'
+        }
     }
-}
+    STATICFILES_DIRS = (
+        BASE_DIR / 'static',
+    )
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DATABASE_NAME'),
+            'USER': os.getenv('DATABASE_USER'),
+        }
+    }
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -158,10 +176,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = (
-#     BASE_DIR / 'static',
-# )
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -209,7 +223,6 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 LOW_CACHE = False
-ENV_TYPE = os.getenv('ENV_TYPE')
 
 if ENV_TYPE in ['prod', 'test', 'stage']:
     CACHE_MIDDLEWARE_ALIAS = 'default'

@@ -60,9 +60,9 @@ class ProductListView(ListView):
     def get_queryset(self):
         if self.request.GET.get('filter'):
             category_name = self.request.GET.get('filter')
-            new_queryset = get_products_by_category(category_name)
+            new_queryset = get_products_by_category(category_name).order_by('price')
         else:
-            new_queryset = get_products()
+            new_queryset = get_products().order_by('price')
         return new_queryset
 
     def get_context_data(self, **kwargs):

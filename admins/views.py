@@ -1,4 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test
+from django.db.models import F
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -6,9 +9,9 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 
-from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminForm
+from admins.forms import UserAdminRegisterForm, UserAdminProfileForm, ProductAdminForm, CategoryAdminForm
 from orders.models import Order
-from products.models import Product
+from products.models import Product, ProductCategory
 from users.models import User
 
 
@@ -84,6 +87,60 @@ class AdminUserCompleteDeleteView(DeleteView):
         return super(AdminUserCompleteDeleteView, self).dispatch(request, *args, **kwargs)
 
 
+class AdminProductCategoryListView(ListView):
+    model = ProductCategory
+    template_name = 'admins/admin-category-read.html'
+    extra_context = {'title': 'GeekShop - Админ | Категории'}
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminProductCategoryListView, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.model.objects.all().select_related()
+
+
+class AdminProductCategoryCreateView(CreateView):
+    model = ProductCategory
+    template_name = 'admins/admin-category-create.html'
+    form_class = CategoryAdminForm
+    success_url = reverse_lazy('admins:admin_category')
+    extra_context = {'title': 'GeekShop - Админ | Создание категории'}
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminProductCategoryCreateView, self).dispatch(request, *args, **kwargs)
+
+
+class AdminProductCategoryUpdateView(UpdateView):
+    model = ProductCategory
+    template_name = 'admins/admin-category-update-delete.html'
+    form_class = CategoryAdminForm
+    success_url = reverse_lazy('admins:admin_category')
+    extra_context = {'title': 'GeekShop - Админ | Категория'}
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminProductCategoryUpdateView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        if 'discount' in form.cleaned_data:
+            discount = form.cleaned_data['discount']
+            if discount:
+                self.object.product_set.update(price=F('price') * (1 - discount / 100))
+        return super(AdminProductCategoryUpdateView, self).form_valid(form)
+
+
+class AdminCategoryDeleteView(DeleteView):
+    model = ProductCategory
+    template_name = 'admins/admin-category-update-delete.html'
+    success_url = reverse_lazy('admins:admin_category')
+
+    @method_decorator(user_passes_test(lambda u: u.is_superuser, login_url='/'))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AdminCategoryDeleteView, self).dispatch(request, *args, **kwargs)
+
+
 class AdminProductListView(ListView):
     model = Product
     template_name = 'admins/admin-products-read.html'
@@ -94,7 +151,10 @@ class AdminProductListView(ListView):
         return super(AdminProductListView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return self.model.objects.all().select_related()
+        if 'pk' in self.kwargs:
+            return self.model.objects.filter(category_id=self.kwargs['pk']).select_related()
+        else:
+            return self.model.objects.all().select_related()
 
 
 class AdminProductCreateView(CreateView):
@@ -170,3 +230,38 @@ def update_order_status(request, pk):
 def cancel_order(request, pk):
     Order.objects.get(pk=pk).delete()
     return HttpResponseRedirect(reverse_lazy('admins:admin_orders'))
+
+
+def change_product_is_active_status(request, pk):
+    selected_product = Product.objects.get(pk=pk)
+    selected_product.is_active = not selected_product.is_active
+    selected_product.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_products'))
+
+
+def change_productcategory_is_active_status(request, pk):
+    selected_category = ProductCategory.objects.get(pk=pk)
+    selected_category.is_active = not selected_category.is_active
+    selected_category.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_category'))
+
+
+@receiver(pre_save, sender=ProductCategory)
+def product_is_active_update_productcategory_save(sender, instance, **kwargs):
+    if instance.pk:
+        instance.product_set.update(is_active=instance.is_active)
+
+
+def change_user_is_active_status(request, pk):
+    selected_user = User.objects.get(pk=pk)
+    if selected_user != request.user:
+        selected_user.is_active = not selected_user.is_active
+        selected_user.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_users'))
+
+
+def change_user_is_staff_status(request, pk):
+    selected_user = User.objects.get(pk=pk)
+    selected_user.is_staff = not selected_user.is_staff
+    selected_user.save()
+    return HttpResponseRedirect(reverse_lazy('admins:admin_users'))

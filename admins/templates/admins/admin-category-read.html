@@ -14,37 +14,42 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
+                                <th>ID</th>
                                 <th>Название</th>
-                                <th>Цена</th>
-                                <th>Количество</th>
-                                <th>Категория</th>
+                                <th>Описание</th>
                                 <th>Активный</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tfoot>
                             <tr>
+                                <th>ID</th>
                                 <th>Название</th>
-                                <th>Цена</th>
-                                <th>Количество</th>
-                                <th>Категория</th>
+                                <th>Описание</th>
                                 <th>Активный</th>
+                                <th></th>
                             </tr>
                             </tfoot>
                             <tbody>
-                            {% for product in object_list %}
+                            {% for category in object_list %}
                                 <tr>
-                                    <td><a href="{% url 'admins:admin_products_update' product.id %}"
-                                           style="color: dodgerblue">{{ product.name }}</a></td>
-                                    <td>{{ product.price }}</td>
-                                    <td>{{ product.quantity }}</td>
-                                    <td>{{ product.category }}</td>
+                                    <td>{{ category.id }}</td>
+                                    <td><a href="{% url 'admins:admin_category_update' category.id %}"
+                                           style="color: dodgerblue">{{ category.name }}</a></td>
+                                    <td>{{ category.description }}</td>
                                     <td class="text-center">
-                                        <a href="{% url 'admins:admin_products_update_status' product.pk %}">
-                                            <i class="{% if product.is_active %}
+                                        <a href="{% url 'admins:admin_category_update_status' category.pk %}">
+                                            <i class="{% if category.is_active %}
                                                           fas fa-check-circle
                                                       {% else %}
                                                           fas fa-times-circle
                                                       {% endif %}"></i>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'admins:admin_products_category' category.id %}"
+                                           class="btn btn-outline-primary col">
+                                            Список продуктов в категории
                                         </a>
                                     </td>
                                 </tr>
@@ -54,8 +59,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="{% url 'admins:admin_products_create' %}">
-                        <button class="btn btn-success">Создать продукт</button>
+                    <a href="{% url 'admins:admin_category_create' %}">
+                        <button class="btn btn-success">Создать категорию</button>
                     </a>
                 </div>
             </div>
