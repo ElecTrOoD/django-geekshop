@@ -51,6 +51,11 @@
                                            name="orderitems-{{ forloop.parentloop.counter0 }}-quantity"
                                            value="{{ field.value }}" min="0" max="{{ form.instance.product.quantity }}"
                                            class="form-control">
+                                {% elif field.name == 'quantity' %}
+                                    <input type="number"
+                                           name="orderitems-{{ forloop.parentloop.counter0 }}-quantity"
+                                           value="0" min="0" max="{{ form.instance.product.quantity }}"
+                                           class="form-control">
                                 {% endif %}
                             </td>
                         {% endfor %}
