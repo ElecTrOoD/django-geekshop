@@ -254,8 +254,9 @@ def product_is_active_update_productcategory_save(sender, instance, **kwargs):
 
 def change_user_is_active_status(request, pk):
     selected_user = User.objects.get(pk=pk)
-    selected_user.is_active = not selected_user.is_active
-    selected_user.save()
+    if selected_user != request.user:
+        selected_user.is_active = not selected_user.is_active
+        selected_user.save()
     return HttpResponseRedirect(reverse_lazy('admins:admin_users'))
 
 
